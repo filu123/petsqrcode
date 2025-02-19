@@ -3,7 +3,7 @@ import type { Provider } from "@supabase/supabase-js"
 
 export const oauthProviders = ["github"] as Provider[]
 
-// use the css variables from DaisyUI to style Supabase auth template
+// Customize the appearance
 export const sharedAppearance = {
   theme: ThemeSupa,
   variables: {
@@ -22,9 +22,24 @@ export const sharedAppearance = {
       fontSizes: {
         baseInputSize: "16px",
       },
+      borderWidths: {
+        buttonBorderWidth: '1px',
+        inputBorderWidth: '1px',
+      },
+      radii: {
+        borderRadiusButton: '0.5rem',
+        buttonBorderRadius: '0.5rem',
+        inputBorderRadius: '0.5rem',
+      },
+      space: {
+        inputPadding: '0.75rem 1rem',
+        buttonPadding: '0.75rem 1rem',
+      },
     },
   },
   className: {
     button: "authBtn",
+    // Add a class for social buttons to remove the bottom border
+    socialButton: "authSocialBtn",
   },
 }

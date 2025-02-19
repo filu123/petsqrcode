@@ -1,6 +1,7 @@
 import { fail, redirect } from "@sveltejs/kit"
 import { sendAdminEmail, sendUserEmail } from "$lib/mailer"
 import { WebsiteBaseUrl } from "../../../../config"
+import { createClient } from '@supabase/supabase-js'
 
 export const actions = {
   toggleEmailSubscription: async ({ locals: { supabase, safeGetSession } }) => {
@@ -229,112 +230,210 @@ export const actions = {
     if (!session || !user?.id) {
       redirect(303, "/login")
     }
-
+    
     const formData = await request.formData()
-    const fullName = formData.get("fullName") as string
-    const companyName = formData.get("companyName") as string
-    const website = formData.get("website") as string
+  
 
+    const firstName = formData.get("firstName") as string
+    const lastName = formData.get("lastName") as string
+    const homePhone = formData.get("homePhone") as string
+    const mobilePhone = formData.get("mobilePhone") as string
+    const email = formData.get("email") as string
+    const country = formData.get("country") as string
+    const address = formData.get("address") as string
+    
+
+    // Pet details
+    const petName = formData.get("petName") as string
+    const petSecondName = formData.get("petSecondName") as string
+    const dateOfBirth = formData.get("dateOfBirth") as string
+    const gender = formData.get("gender") as string
+    const petType = formData.get("petType") as string
+    const temperament = formData.get("temperament") as string
+    const food = formData.get("food") as string
+    const favouriteTreats = formData.get("favouriteTreats") as string
+    const allergies = formData.get("allergies") as string
+    const breed = formData.get("breed") as string
+    const bio = formData.get("bio") as string
+    const avatarFile = formData.get("avatar") as File
+    
+    let avatarUrl = null
     let validationError
-    const fieldMaxTextLength = 50
     const errorFields = []
-    if (!fullName) {
-      validationError = "Name is required"
-      errorFields.push("fullName")
-    } else if (fullName.length > fieldMaxTextLength) {
-      validationError = `Name must be less than ${fieldMaxTextLength} characters`
-      errorFields.push("fullName")
+
+    const pets = []
+    let i = 0
+    while (formData.has(`pets[${i}].petName`)) {
+      const pet = {
+        petName: formData.get(`pets[${i}].petName`),
+        petSecondName: formData.get(`pets[${i}].petSecondName`),
+        dateOfBirth: formData.get(`pets[${i}].dateOfBirth`),
+        gender: formData.get(`pets[${i}].gender`),
+        petType: formData.get(`pets[${i}].petType`),
+        temperament: formData.get(`pets[${i}].temperament`),
+        food: formData.get(`pets[${i}].food`),
+        favouriteTreats: formData.get(`pets[${i}].favouriteTreats`),
+        allergies: formData.get(`pets[${i}].allergies`),
+        breed: formData.get(`pets[${i}].breed`),
+        bio: formData.get(`pets[${i}].bio`),
+        avatarUrl: formData.get(`pets[${i}].avatarUrl`)
+      }
+      pets.push(pet)
+      i++
     }
-    if (!companyName) {
-      validationError =
-        "Company name is required. If this is a hobby project or personal app, please put your name."
-      errorFields.push("companyName")
-    } else if (companyName.length > fieldMaxTextLength) {
-      validationError = `Company name must be less than ${fieldMaxTextLength} characters`
-      errorFields.push("companyName")
+
+    // Validate at least one pet
+    if (pets.length === 0) {
+      return fail(400, {
+        errorMessage: "At least one pet is required",
+        errorFields: ["petName"],
+      })
     }
-    if (!website) {
-      validationError =
-        "Company website is required. An app store URL is a good alternative if you don't have a website."
-      errorFields.push("website")
-    } else if (website.length > fieldMaxTextLength) {
-      validationError = `Company website must be less than ${fieldMaxTextLength} characters`
-      errorFields.push("website")
+
+    // Validate each pet
+    for (const pet of pets) {
+      if (!pet.petName || !pet.dateOfBirth || !pet.gender || !pet.petType ) {
+        return fail(400, {
+          errorMessage: "Please fill in all required pet fields",
+          errorFields: ["petName", "dateOfBirth", "gender", "petType", "breed"],
+        })
+      }
     }
+    // Validate profile fields
+    if (!firstName) {
+      validationError = "First name is required"
+      errorFields.push("firstName")
+    }
+    if (!lastName) {
+      validationError = "Last name is required"
+      errorFields.push("lastName")
+    }
+    if (!mobilePhone) {
+      validationError = "Mobile phone is required"
+      errorFields.push("mobilePhone")
+    }
+    if (!email) {
+      validationError = "Email is required"
+      errorFields.push("email")
+    }
+    if (!country) {
+      validationError = "Country is required"
+      errorFields.push("country")
+    }
+    if (!address) {
+      validationError = "Address is required"
+      errorFields.push("address")
+    }
+    
+   
+    if (avatarFile && avatarFile.size > 0) {
+      // Upload to Supabase Storage
+      const fileExt = avatarFile.name.split('.').pop()
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`
+      const filePath = `${user.id}/${fileName}`
+
+      const { data: uploadData, error: uploadError } = await supabase
+        .storage
+        .from('pet-avatars')
+        .upload(filePath, avatarFile)
+
+      if (uploadError) {
+        console.error("Error uploading avatar", uploadError)
+        return fail(500, {
+          errorMessage: "Error uploading pet avatar. Please try again."
+        })
+      }
+
+      // Get the public URL
+      const { data: { publicUrl } } = supabase
+        .storage
+        .from('pet-avatars')
+        .getPublicUrl(filePath)
+
+      avatarUrl = publicUrl
+    }
+
     if (validationError) {
       return fail(400, {
         errorMessage: validationError,
         errorFields,
-        fullName,
-        companyName,
-        website,
+        firstName,
+        lastName,
+        homePhone,
+        mobilePhone,
+        email,
+        country,
+        address
       })
     }
-
-    // To check if created or updated, check if priorProfile exists
-    const { data: priorProfile, error: priorProfileError } = await supabase
-      .from("profiles")
-      .select(`*`)
-      .eq("id", session?.user.id)
-      .single()
-
-    const { error } = await supabase
+    // Update profile
+    const { error: profileError } = await supabase
       .from("profiles")
       .upsert({
         id: user.id,
-        full_name: fullName,
-        company_name: companyName,
-        website: website,
+        first_name: firstName,
+        last_name: lastName,
+        home_phone: homePhone,
+        mobile_phone: mobilePhone,
+        email: email,
+        country: country,
+        address: address,
         updated_at: new Date(),
-        unsubscribed: priorProfile?.unsubscribed ?? false,
+       
       })
       .select()
-
-    if (error) {
-      console.error("Error updating profile", error)
+    if (profileError) {
+      console.error("Error updating profile", profileError)
       return fail(500, {
-        errorMessage: "Unknown error. If this persists please contact us.",
-        fullName,
-        companyName,
-        website,
+        errorMessage: "Error updating profile. Please try again."
       })
     }
 
-    // If the profile was just created, send an email to the user and admin
-    const newProfile =
-      priorProfile?.updated_at === null && priorProfileError === null
-    if (newProfile) {
-      await sendAdminEmail({
-        subject: "Profile Created",
-        body: `Profile created by ${session.user.email}\nFull name: ${fullName}\nCompany name: ${companyName}\nWebsite: ${website}`,
-      })
+    
+    for (const pet of pets) {
+      const { error: petError } = await supabase
+        .from("pets")
+        .insert({
+          profile_id: user.id,
+          name: pet.petName,
+          second_name: pet.petSecondName,
+          date_of_birth: pet.dateOfBirth,
+          gender: pet.gender,
+          pet_type: pet.petType,
+          temperament: pet.temperament,
+          food: pet.food,
+          favourite_treats: pet.favouriteTreats,
+          allergies: pet.allergies,
+          breed: pet.breed,
+          bio: pet.bio,
+          avatar_url: pet.avatarUrl,
+          created_at: new Date(),
+          updated_at: new Date(),
+        })
 
-      // Send welcome email
-      await sendUserEmail({
-        user: session.user,
-        subject: "Welcome!",
-        from_email: "no-reply@saasstarter.work",
-        template_name: "welcome_email",
-        template_properties: {
-          companyName: "SaaS Starter",
-          WebsiteBaseUrl: WebsiteBaseUrl,
-        },
-      })
+      if (petError) {
+        console.error("Error creating pet", petError)
+        return fail(500, {
+          errorMessage: "Error creating pet. Please try again."
+        })
+      }
     }
+
+    // Send welcome email only for the first pet
+    await sendUserEmail({
+      user: session.user,
+      subject: "Welcome to PetsQRCode!",
+      from_email: "no-reply@petsqrcode.com",
+      template_name: "welcome_email",
+      template_properties: {
+        firstName: firstName,
+        petName: pets[0].petName,
+        WebsiteBaseUrl: WebsiteBaseUrl,
+      },
+    })
 
     return {
-      fullName,
-      companyName,
-      website,
+      success: true
     }
-  },
-  signout: async ({ locals: { supabase, safeGetSession } }) => {
-    const { session } = await safeGetSession()
-    if (session) {
-      await supabase.auth.signOut()
-      redirect(303, "/")
-    } else {
-      redirect(303, "/")
-    }
-  },
+  }
 }

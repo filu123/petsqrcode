@@ -1,19 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 a {
   @apply cursor-pointer;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: white;
 }
 
 /* Hack to temporarily solve https://github.com/supabase/auth-ui/issues/219 */
 .authBtn {
   @apply btn;
 }
+
 button[disabled].authBtn {
   font-size: 0.001px;
   filter: brightness(65%);
 }
+
 button[disabled].authBtn::before {
   font-size: 14px;
   content: "Loading...";

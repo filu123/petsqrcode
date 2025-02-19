@@ -15,7 +15,7 @@ import { load_helper } from "$lib/load_helpers"
 export const load = async ({ fetch, data, depends, url }) => {
   depends("supabase:auth")
 
-  const supabase = isBrowser()
+   const supabase = isBrowser()
     ? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
         global: {
           fetch,
@@ -48,7 +48,7 @@ export const load = async ({ fetch, data, depends, url }) => {
   const createProfilePath = "/account/create_profile"
   const signOutPath = "/account/sign_out"
   if (
-    profile &&
+    !profile ||
     !_hasFullProfile(profile) &&
     url.pathname !== createProfilePath &&
     url.pathname !== signOutPath &&
@@ -72,15 +72,20 @@ export const _hasFullProfile = (
   if (!profile) {
     return false
   }
-  if (!profile.full_name) {
-    return false
-  }
-  if (!profile.company_name) {
-    return false
-  }
-  if (!profile.website) {
-    return false
+
+  if (profile.has_completed_onboarding) {
+    return true
   }
 
-  return true
+  // Required fields check
+  const requiredFields = [
+    'first_name',
+    'last_name',
+    'mobile_phone',
+    'email',
+    'country',
+    'address'
+  ]
+
+  return requiredFields.every(field => profile[field as keyof typeof profile])
 }

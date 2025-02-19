@@ -15,12 +15,9 @@
 </script>
 
 <div
-  class="text-center content-center max-w-lg mx-auto min-h-[70vh] pb-12 flex items-center place-content-center"
+  class="text-center content-center items-center justify-center mx-auto max-w-[1280px] min-h-[70vh] pb-12 flex container"
 >
-  <div class="flex flex-col w-64 lg:w-80">
+  <div class="flex flex-col w-full">
     {@render children?.()}
-    <div class="mt-8 {isEurope ? 'block' : 'hidden'}">
-      🍪 Logging in uses Cookies 🍪
-    </div>
   </div>
 </div>

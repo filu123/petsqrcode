@@ -33,18 +33,36 @@
         <p class="mt-2 text-sm text-gray-500 leading-relaxed">
           {plan.description}
         </p>
-        <div class="mt-auto pt-4 text-sm text-gray-600">
-          Plan Includes:
-          <ul class="list-disc list-inside mt-2 space-y-1">
-            {#each plan.features as feature}
-              <li class="">{feature}</li>
-            {/each}
-            <ul></ul>
-          </ul>
-        </div>
-        <div class="pt-8">
+        <div class="flex items-center gap-1">
           <span class="text-4xl font-bold">{plan.price}</span>
           <span class="text-gray-400">{plan.priceIntervalName}</span>
+        </div>
+        <div class=" pt-4 text-sm text-gray-600">
+          Plan Includes:
+          <ul class="list-none mt-2 space-y-1">
+            {#each plan.features as feature}
+              <li class="flex items-center">
+                <!-- Checkmark Icon -->
+                <svg
+                  class="w-4 h-4 text-[#079455] mr-2 bg-[#DCFAE6] rounded-full"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
+                </svg>
+                {feature}
+              </li>
+            {/each}
+          </ul>
+        </div>
+        <div class="pt-8 mt-auto">
           <div class="mt-6 pt-4 flex-1 flex flex-row items-center">
             {#if plan.id === currentPlanId}
               <div

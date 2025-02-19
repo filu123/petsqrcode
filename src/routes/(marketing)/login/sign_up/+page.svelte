@@ -9,17 +9,40 @@
   <title>Sign up</title>
 </svelte:head>
 
-<h1 class="text-2xl font-bold mb-6">Sign Up</h1>
-<Auth
-  supabaseClient={data.supabase}
-  view="sign_up"
-  redirectTo={`${data.url}/auth/callback`}
-  showLinks={false}
-  providers={oauthProviders}
-  socialLayout="horizontal"
-  appearance={sharedAppearance}
-  additionalData={undefined}
-/>
-<div class="text-l text-slate-800 mt-4 mb-2">
-  Have an account? <a class="underline" href="/login/sign_in">Sign in</a>.
+<div class="flex flex-col md:flex-row min-h-screen">
+  <!-- Form Section -->
+  <div class="w-full md:w-full flex flex-col justify-center max-w-[428px] p-6">
+    <h1 class="text-2xl font-bold mb-6">Sign Up</h1>
+    <Auth
+      supabaseClient={data.supabase}
+      view="sign_up"
+      redirectTo={`${data.url}/auth/callback`}
+      showLinks={false}
+      providers={oauthProviders}
+      socialLayout="horizontal"
+      appearance={sharedAppearance}
+      additionalData={undefined}
+    />
+    <div class="text-l text-slate-800 mt-4 mb-2">
+      Have an account? <a class="underline" href="/login/sign_in">Sign in</a>.
+    </div>
+  </div>
+
+  <!-- Image Section -->
+  <div class="w-full md:w-full hidden md:flex justify-end items-center p-6">
+    <img
+      src="/images/signupsection.svg"
+      alt="Sign Up Image"
+      class="max-w-full h-auto"
+    />
+  </div>
 </div>
+
+<style>
+  .authSocialBtn {
+    border-bottom: none;
+  }
+  .c-kbVGyA {
+    display: none;
+  }
+</style>
