@@ -15,7 +15,7 @@
     </p>
     <button
       class="btn btn-primary btn-lg w-full lg:w-auto"
-      on:click={onGetStarted}
+      onclick={onGetStarted}
     >
       Let's Get Started
     </button>

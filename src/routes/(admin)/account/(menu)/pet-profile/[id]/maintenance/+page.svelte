@@ -71,7 +71,7 @@
         simple as needing their claws cutting or a groom.
       </p>
     </div>
-    <button class="btn btn-primary" on:click={toggleAddForm}>
+    <button class="btn btn-primary" onclick={toggleAddForm}>
       {#if showAddForm}
         Cancel
       {:else}

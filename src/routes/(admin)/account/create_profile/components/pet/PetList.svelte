@@ -37,13 +37,13 @@
       <div class="flex gap-2">
         <button
           class="text-primary hover:text-primary-dark"
-          on:click={() => onEdit("edit", i)}
+          onclick={() => onEdit("edit", i)}
         >
           Edit
         </button>
         <button
           class="text-red-500 hover:text-red-700"
-          on:click={() => onDelete("delete", i)}
+          onclick={() => onDelete("delete", i)}
         >
           Delete
         </button>
@@ -54,7 +54,7 @@
 
 <button
   class="btn btn-outline gap-2 w-full mb-8"
-  on:click={() => onAddNew("addNew")}
+  onclick={() => onAddNew("addNew")}
 >
   <svg
     xmlns="http://www.w3.org/2000/svg"

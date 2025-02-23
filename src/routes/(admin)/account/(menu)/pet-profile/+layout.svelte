@@ -97,10 +97,7 @@
         <div class="join-item bg-base-200 px-3 py-1 text-sm">
           Paaws.bio/{selectedPet?.name?.toLowerCase()}
         </div>
-        <button
-          class="btn btn-ghost btn-sm join-item"
-          on:click={copyProfileUrl}
-        >
+        <button class="btn btn-ghost btn-sm join-item" onclick={copyProfileUrl}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5"

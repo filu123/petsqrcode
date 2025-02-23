@@ -77,7 +77,7 @@
   }
 </script>
 
-<svelte:window on:click={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} />
 
 <div class="h-fit">
   <DashboardHeader></DashboardHeader>
@@ -130,7 +130,7 @@
                 class={adminSection === "home"
                   ? "border rounded-lg text-[#344054] text-base font-semibold"
                   : "text-[#344054] text-base font-semibold"}
-                on:click={closeDrawer}
+                onclick={closeDrawer}
               >
                 <svg
                   width="20"
@@ -156,7 +156,7 @@
                 class={adminSection === "pet_profile"
                   ? "border rounded-lg text-[#344054] text-base font-semibold"
                   : "text-[#344054] text-base font-semibold"}
-                on:click={closeDrawer}
+                onclick={closeDrawer}
               >
                 <svg
                   width="23"
@@ -182,7 +182,7 @@
                 class={adminSection === "qr_tags"
                   ? "border rounded-lg text-[#344054] text-base font-semibold"
                   : "text-[#344054] text-base font-semibold"}
-                on:click={closeDrawer}
+                onclick={closeDrawer}
               >
                 <svg
                   width="20"
@@ -256,7 +256,7 @@
                   >
                     <button
                       class="flex items-center gap-3"
-                      on:click={() => {
+                      onclick={() => {
                         selectPet(pet)
                         goto(`/account/pet-profile/${pet.id}/details`)
                       }}
@@ -275,7 +275,7 @@
                       <button
                         tabindex="0"
                         class="btn btn-ghost btn-xs btn-circle dropdown-menu"
-                        on:click={(e) => toggleDropdown(pet.id, e)}
+                        onclick={(e) => toggleDropdown(pet.id, e)}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -321,7 +321,7 @@
                           <li>
                             <button
                               class="text-error text-sm"
-                              on:click={() => {
+                              onclick={() => {
                                 /* Add delete handler */
                               }}
                             >

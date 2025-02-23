@@ -126,14 +126,14 @@
     <button
       type="button"
       class="btn btn-outline rounded-full px-8"
-      on:click={prevStep}
+      onclick={prevStep}
     >
       Back
     </button>
     <button
       type="button"
       class="btn btn-primary rounded-full px-8"
-      on:click={onContinue}
+      onclick={onContinue}
     >
       Continue
     </button>

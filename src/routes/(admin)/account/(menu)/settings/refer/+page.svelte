@@ -35,7 +35,7 @@
         class="input input-bordered flex-1 bg-white text-[#101828]"
       />
       <button
-        on:click={copyToClipboard}
+        onclick={copyToClipboard}
         class="btn btn-success text-white gap-2"
       >
         <svg

@@ -255,7 +255,7 @@
       <div class="mt-8">
         <button
           class="btn btn-primary w-full md:w-auto md:min-w-[200px] mx-auto block rounded-full"
-          on:click={goToNextSubstep}
+          onclick={goToNextSubstep}
         >
           Continue
         </button>
@@ -316,13 +316,13 @@
       <div class="flex justify-between mt-8">
         <button
           class="btn btn-outline rounded-full px-8"
-          on:click={goToPreviousSubstep}
+          onclick={goToPreviousSubstep}
         >
           Back
         </button>
         <button
           class="btn btn-primary rounded-full px-8"
-          on:click={goToNextSubstep}
+          onclick={goToNextSubstep}
         >
           Continue
         </button>
@@ -343,7 +343,7 @@
       <p class="text-gray-600">{country}</p>
       <button
         class="text-primary hover:text-primary-dark mt-2"
-        on:click={() => (currentSubstep = 2)}
+        onclick={() => (currentSubstep = 2)}
       >
         Edit
       </button>
@@ -352,13 +352,13 @@
     <div class="flex justify-between">
       <button
         class="btn btn-outline rounded-full px-8"
-        on:click={goToPreviousSubstep}
+        onclick={goToPreviousSubstep}
       >
         Back
       </button>
       <button
         class="btn btn-primary rounded-full px-8"
-        on:click={handleFinalContinue}
+        onclick={handleFinalContinue}
       >
         Continue
       </button>

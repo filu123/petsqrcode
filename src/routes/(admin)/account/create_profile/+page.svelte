@@ -193,7 +193,7 @@
           </p>
           <button
             class="btn btn-primary rounded-full px-8"
-            on:click={goToDashboard}
+            onclick={goToDashboard}
           >
             Jump to Dashboard
           </button>

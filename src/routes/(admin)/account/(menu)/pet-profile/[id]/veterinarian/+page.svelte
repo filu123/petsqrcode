@@ -77,7 +77,7 @@
             <p class="text-gray-600">{veterinarian.phone_number}</p>
             <p class="text-gray-600">{veterinarian.email}</p>
           </div>
-          <button class="btn btn-ghost btn-sm" on:click={startEdit}>
+          <button class="btn btn-ghost btn-sm" onclick={startEdit}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5"
@@ -181,7 +181,7 @@
 
         <div class="flex justify-end gap-2 pt-4">
           {#if veterinarian}
-            <button type="button" class="btn btn-ghost" on:click={cancelEdit}>
+            <button type="button" class="btn btn-ghost" onclick={cancelEdit}>
               Cancel
             </button>
           {/if}

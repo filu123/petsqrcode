@@ -26,7 +26,7 @@
         class="join-item px-4 py-2 rounded-md {billingInterval === 'year'
           ? 'bg-white'
           : ''}"
-        on:click={() => (billingInterval = "year")}
+        onclick={() => (billingInterval = "year")}
       >
         Annual <span class="badge badge-sm badge-error text-white ml-2"
           >Save 10%</span
@@ -36,7 +36,7 @@
         class="join-item px-4 py-2 rounded-md {billingInterval === 'month'
           ? 'bg-white'
           : ''}"
-        on:click={() => (billingInterval = "month")}
+        onclick={() => (billingInterval = "month")}
       >
         Monthly
       </button>

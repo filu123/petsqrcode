@@ -29,7 +29,7 @@
       </p>
     </div>
 
-    <button class="btn btn-success text-white" on:click={toggleInviteForm}>
+    <button class="btn btn-success text-white" onclick={toggleInviteForm}>
       <svg
         class="w-5 h-5"
         viewBox="0 0 24 24"
@@ -75,7 +75,7 @@
             <button
               type="button"
               class="btn btn-ghost"
-              on:click={toggleInviteForm}
+              onclick={toggleInviteForm}
             >
               Cancel
             </button>
