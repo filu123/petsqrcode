@@ -1,7 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 a {
   @apply cursor-pointer;
@@ -26,4 +26,36 @@ button[disabled].authBtn::before {
   font-size: 14px;
   content: "Loading...";
   color: oklch(var(--pc));
+}
+
+input {
+  background: white;
+  max-height: 44px;
+  border-color: #D0D5DD;
+  box-shadow: 0px 1px 2px 0px #1018280D;
+  color: #101828;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+select {
+  background: white;
+  max-height: 44px !important;
+  border-color: #D0D5DD !important;
+  box-shadow: 0px 1px 2px 0px #1018280D !important;
+  color: #101828 !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 24px !important;
+  min-height: 44px !important;
+}
+
+
+
+.label-text {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #344054;
 }

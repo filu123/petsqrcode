@@ -2,11 +2,11 @@
   import { pricingPlans } from "./pricing_plans"
 
   interface Props {
-    // Module context
     highlightedPlanId?: string
     callToAction: string
     currentPlanId?: string
     center?: boolean
+    billingInterval?: "year" | "month"
   }
 
   let {
@@ -14,72 +14,105 @@
     callToAction,
     currentPlanId = "",
     center = true,
+    billingInterval = "month",
   }: Props = $props()
 </script>
 
-<div
-  class="flex flex-col lg:flex-row gap-10 {center
-    ? 'place-content-center'
-    : ''} flex-wrap"
->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
   {#each pricingPlans as plan}
     <div
-      class="flex-none card card-bordered {plan.id === highlightedPlanId
+      class="card bg-white border {plan.popular
         ? 'border-primary'
-        : 'border-gray-200'} shadow-xl flex-1 flex-grow min-w-[260px] max-w-[310px] p-6"
+        : 'border-gray-200'} shadow-sm"
     >
-      <div class="flex flex-col h-full">
-        <div class="text-xl font-bold">{plan.name}</div>
-        <p class="mt-2 text-sm text-gray-500 leading-relaxed">
-          {plan.description}
-        </p>
-        <div class="flex items-center gap-1">
-          <span class="text-4xl font-bold">{plan.price}</span>
-          <span class="text-gray-400">{plan.priceIntervalName}</span>
+      <div class="card-body p-6">
+        <!-- Plan Header -->
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 class="flex items-center gap-2">
+              <span style="color: {plan.color}" class="text-xl font-semibold">
+                {plan.name.split(" ")[0]}
+              </span>
+              <span class="text-xl font-normal">plan</span>
+            </h3>
+            {#if plan.popular}
+              <span class="badge badge-success badge-sm mt-1">Popular</span>
+            {/if}
+          </div>
         </div>
-        <div class=" pt-4 text-sm text-gray-600">
-          Plan Includes:
-          <ul class="list-none mt-2 space-y-1">
+
+        <!-- Price -->
+        <div class="mb-6">
+          <div class="flex items-baseline">
+            <span class="text-4xl font-bold">
+              {billingInterval === "year"
+                ? plan.yearlyPrice
+                : plan.monthlyPrice}
+            </span>
+            <span class="text-gray-500 ml-1">per month</span>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        {#if plan.id === currentPlanId}
+          <div class="btn btn-outline no-animation w-full mb-6 cursor-default">
+            Current Plan
+          </div>
+        {:else if currentPlanId === "pro" && plan.id === "ultra"}
+          <a
+            href={"/account/billing/manage"}
+            class="btn btn-primary text-white w-full mb-6"
+          >
+            Upgrade
+          </a>
+        {:else if currentPlanId === "pro" && plan.id === "free"}
+          <a
+            href={"/account/billing/manage"}
+            class="btn btn-outline w-full mb-6"
+          >
+            Downgrade
+          </a>
+        {:else if currentPlanId === "ultra"}
+          <a
+            href={"/account/billing/manage"}
+            class="btn btn-outline w-full mb-6"
+          >
+            Downgrade
+          </a>
+        {:else if currentPlanId === "free" && (plan.id === "pro" || plan.id === "ultra")}
+          <a
+            href={"/account/subscribe/" + plan.stripe_price_id}
+            class="btn btn-primary text-white w-full mb-6"
+          >
+            {plan.id === "ultra" ? "Upgrade to Ultra" : "Upgrade to Pro"}
+          </a>
+        {/if}
+
+        <!-- Features -->
+        <div>
+          <p class="text-sm text-gray-600 mb-4">
+            {plan.id === "free"
+              ? "Some basics to get started:"
+              : plan.id === "pro"
+                ? "Everything in free plan plus:"
+                : "Everything in pro plan plus:"}
+          </p>
+          <ul class="space-y-3">
             {#each plan.features as feature}
-              <li class="flex items-center">
-                <!-- Checkmark Icon -->
+              <li class="flex gap-2 items-start">
                 <svg
-                  class="w-4 h-4 text-[#079455] mr-2 bg-[#DCFAE6] rounded-full"
-                  fill="none"
-                  stroke="currentColor"
+                  class="w-5 h-5 text-success flex-shrink-0"
                   viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 13l4 4L19 7"
-                  ></path>
+                    fill="currentColor"
+                    d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+                  />
                 </svg>
-                {feature}
+                <span class="text-gray-600 text-sm">{feature}</span>
               </li>
             {/each}
           </ul>
-        </div>
-        <div class="pt-8 mt-auto">
-          <div class="mt-6 pt-4 flex-1 flex flex-row items-center">
-            {#if plan.id === currentPlanId}
-              <div
-                class="btn btn-outline btn-success no-animation w-[80%] mx-auto cursor-default"
-              >
-                Current Plan
-              </div>
-            {:else}
-              <a
-                href={"/account/subscribe/" +
-                  (plan?.stripe_price_id ?? "free_plan")}
-                class="btn btn-primary w-[80%] mx-auto"
-              >
-                {callToAction}
-              </a>
-            {/if}
-          </div>
         </div>
       </div>
     </div>

@@ -3,11 +3,64 @@
   import { writable } from "svelte/store"
   import { setContext } from "svelte"
   import { WebsiteName } from "../../../../config"
+  import DashboardHeader from "$lib/components/DashboardHeader.svelte"
+  import { selectedPetStore } from "$lib/stores/selectedPet"
+  import { goto } from "$app/navigation"
+
   interface Props {
+    data: {
+      pets: any[] // Add proper type for pets
+    }
     children?: import("svelte").Snippet
   }
 
-  let { children }: Props = $props()
+  let { data, children }: Props = $props()
+  let selectedPet = $state(data.pets?.[0])
+
+  let openDropdownId = $state<string | null>(null)
+
+  function toggleDropdown(petId: string, event: Event) {
+    event.stopPropagation()
+    openDropdownId = openDropdownId === petId ? null : petId
+  }
+
+  // Close dropdown when clicking outside
+  function handleClickOutside(event: MouseEvent) {
+    if (openDropdownId) {
+      const target = event.target as HTMLElement
+      if (!target.closest(".dropdown-menu")) {
+        openDropdownId = null
+      }
+    }
+  }
+
+  // Make selectedPet available to child components
+  setContext("selectedPet", {
+    get: () => selectedPet,
+    set: (pet: any) => (selectedPet = pet),
+  })
+
+  function selectPet(pet: any) {
+    selectedPet = pet
+    // Get the current path segments
+    const pathSegments = window.location.pathname.split("/")
+    const currentTab = pathSegments[pathSegments.length - 1]
+    // Preserve the current tab when switching pets
+    const targetPath = [
+      "details",
+      "contacts",
+      "maintenance",
+      "veterinarian",
+    ].includes(currentTab)
+      ? `/account/pet-profile/${pet.id}/${currentTab}`
+      : `/account/pet-profile/${pet.id}/details`
+
+    goto(targetPath, {
+      invalidateAll: true,
+    })
+    const dropdownButton = document.querySelector(".dropdown") as HTMLElement
+    dropdownButton?.blur()
+  }
 
   const adminSectionStore = writable("")
   setContext("adminSection", adminSectionStore)
@@ -24,15 +77,20 @@
   }
 </script>
 
-<div class="drawer lg:drawer-open">
-  <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
-  <div class="drawer-content">
-    <div class="navbar bg-base-100 lg:hidden">
-      <div class="flex-1">
-        <a class="btn btn-ghost normal-case text-xl" href="/">{WebsiteName}</a>
-      </div>
-      <div class="flex-none">
-        <div class="dropdown dropdown-end">
+<svelte:window on:click={handleClickOutside} />
+
+<div class="h-fit">
+  <DashboardHeader></DashboardHeader>
+  <div class="drawer lg:drawer-open">
+    <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
+
+    <div class="drawer-content">
+      <div class="navbar bg-base-100 lg:hidden">
+        <div class="flex-1">
+          <a class="btn btn-ghost normal-case text-xl" href="/">{WebsiteName}</a
+          >
+        </div>
+        <div class="flex-none">
           <label for="admin-drawer" class="btn btn-ghost btn-circle">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -40,109 +98,322 @@
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              ><path
+            >
+              <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M4 6h16M4 12h16M4 18h7"
-              /></svg
-            >
+              />
+            </svg>
           </label>
         </div>
       </div>
-    </div>
-    <div class="container px-6 lg:px-12 py-3 lg:py-6">
-      {@render children?.()}
-    </div>
-  </div>
 
-  <div class="drawer-side">
-    <label for="admin-drawer" class="drawer-overlay"></label>
-    <ul
-      class="menu menu-lg p-4 w-80 min-h-full bg-base-100 lg:border-r text-primary"
-    >
-      <li>
-        <div
-          class="normal-case menu-title text-xl font-bold text-primary flex flex-row"
-        >
-          <a href="/" class="grow">{WebsiteName}</a>
-          <label for="admin-drawer" class="lg:hidden ml-3"> &#x2715; </label>
+      <div class="container px-6 lg:px-8 py-3 lg:py-6">
+        {@render children?.()}
+      </div>
+    </div>
+
+    <div class="drawer-side mt-2">
+      <label for="admin-drawer" class="drawer-overlay" />
+      <div class="w-72 min-h-full lg:border-r border-base-200 flex flex-col">
+        <!-- Pet Selection Section -->
+
+        <!-- Navigation Menu -->
+        <div class="flex-1 p-4">
+          <p class="text-sm font-bold text-[#344054] mb-4">Manage</p>
+          <ul class="menu menu-md gap-1">
+            <li>
+              <a
+                href="/account"
+                class={adminSection === "home"
+                  ? "border rounded-lg text-[#344054] text-base font-semibold"
+                  : "text-[#344054] text-base font-semibold"}
+                on:click={closeDrawer}
+              >
+                <svg
+                  width="20"
+                  height="21"
+                  viewBox="0 0 20 21"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6 16H14M9.0177 1.764L2.23539 7.03912C1.78202 7.39175 1.55534 7.56806 1.39203 7.78886C1.24737 7.98444 1.1396 8.20478 1.07403 8.43905C1 8.70352 1 8.9907 1 9.56505V16.8C1 17.9201 1 18.4801 1.21799 18.908C1.40973 19.2843 1.71569 19.5903 2.09202 19.782C2.51984 20 3.07989 20 4.2 20H15.8C16.9201 20 17.4802 20 17.908 19.782C18.2843 19.5903 18.5903 19.2843 18.782 18.908C19 18.4801 19 17.9201 19 16.8V9.56505C19 8.9907 19 8.70352 18.926 8.43905C18.8604 8.20478 18.7526 7.98444 18.608 7.78886C18.4447 7.56806 18.218 7.39175 17.7646 7.03913L10.9823 1.764C10.631 1.49075 10.4553 1.35412 10.2613 1.3016C10.0902 1.25526 9.9098 1.25526 9.73865 1.3016C9.54468 1.35412 9.36902 1.49075 9.0177 1.764Z"
+                    stroke="#667085"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Dashboard
+              </a>
+            </li>
+            <li>
+              <a
+                href="/account/pet-profile/{selectedPet?.id}/details"
+                class={adminSection === "pet_profile"
+                  ? "border rounded-lg text-[#344054] text-base font-semibold"
+                  : "text-[#344054] text-base font-semibold"}
+                on:click={closeDrawer}
+              >
+                <svg
+                  width="23"
+                  height="23"
+                  viewBox="0 0 23 23"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 3.99998H5.8C4.11984 3.99998 3.27976 3.99998 2.63803 4.32696C2.07354 4.61458 1.6146 5.07353 1.32698 5.63801C1 6.27975 1 7.11983 1 8.79998V17.2C1 18.8801 1 19.7202 1.32698 20.362C1.6146 20.9264 2.07354 21.3854 2.63803 21.673C3.27976 22 4.11984 22 5.8 22H14.2C15.8802 22 16.7202 22 17.362 21.673C17.9265 21.3854 18.3854 20.9264 18.673 20.362C19 19.7202 19 18.8801 19 17.2V13M6.99997 16H8.67452C9.1637 16 9.40829 16 9.63846 15.9447C9.84254 15.8957 10.0376 15.8149 10.2166 15.7053C10.4184 15.5816 10.5914 15.4086 10.9373 15.0627L20.5 5.49998C21.3284 4.67156 21.3284 3.32841 20.5 2.49998C19.6716 1.67156 18.3284 1.67155 17.5 2.49998L7.93723 12.0627C7.59133 12.4086 7.41838 12.5816 7.29469 12.7834C7.18504 12.9624 7.10423 13.1574 7.05523 13.3615C6.99997 13.5917 6.99997 13.8363 6.99997 14.3255V16Z"
+                    stroke="#667085"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Pet Profile
+              </a>
+            </li>
+            <li>
+              <a
+                href="/account/qr-tags"
+                class={adminSection === "qr_tags"
+                  ? "border rounded-lg text-[#344054] text-base font-semibold"
+                  : "text-[#344054] text-base font-semibold"}
+                on:click={closeDrawer}
+              >
+                <svg
+                  width="20"
+                  height="21"
+                  viewBox="0 0 20 21"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5 11H10V16M1.01 11H1M6.01 16H6M10.01 20H10M19.01 11H19M1 16H2.5M13.5 11H15.5M1 20H6M10 1V7M15.6 20H17.4C17.9601 20 18.2401 20 18.454 19.891C18.6422 19.7951 18.7951 19.6422 18.891 19.454C19 19.2401 19 18.9601 19 18.4V16.6C19 16.0399 19 15.7599 18.891 15.546C18.7951 15.3578 18.6422 15.2049 18.454 15.109C18.2401 15 17.9601 15 17.4 15H15.6C15.0399 15 14.7599 15 14.546 15.109C14.3578 15.2049 14.2049 15.3578 14.109 15.546C14 15.7599 14 16.0399 14 16.6V18.4C14 18.9601 14 19.2401 14.109 19.454C14.2049 19.6422 14.3578 19.7951 14.546 19.891C14.7599 20 15.0399 20 15.6 20ZM15.6 7H17.4C17.9601 7 18.2401 7 18.454 6.89101C18.6422 6.79513 18.7951 6.64215 18.891 6.45399C19 6.24008 19 5.96005 19 5.4V3.6C19 3.03995 19 2.75992 18.891 2.54601C18.7951 2.35785 18.6422 2.20487 18.454 2.10899C18.2401 2 17.9601 2 17.4 2H15.6C15.0399 2 14.7599 2 14.546 2.10899C14.3578 2.20487 14.2049 2.35785 14.109 2.54601C14 2.75992 14 3.03995 14 3.6V5.4C14 5.96005 14 6.24008 14.109 6.45399C14.2049 6.64215 14.3578 6.79513 14.546 6.89101C14.7599 7 15.0399 7 15.6 7ZM2.6 7H4.4C4.96005 7 5.24008 7 5.45399 6.89101C5.64215 6.79513 5.79513 6.64215 5.89101 6.45399C6 6.24008 6 5.96005 6 5.4V3.6C6 3.03995 6 2.75992 5.89101 2.54601C5.79513 2.35785 5.64215 2.20487 5.45399 2.10899C5.24008 2 4.96005 2 4.4 2H2.6C2.03995 2 1.75992 2 1.54601 2.10899C1.35785 2.20487 1.20487 2.35785 1.10899 2.54601C1 2.75992 1 3.03995 1 3.6V5.4C1 5.96005 1 6.24008 1.10899 6.45399C1.20487 6.64215 1.35785 6.79513 1.54601 6.89101C1.75992 7 2.03995 7 2.6 7Z"
+                    stroke="#667085"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Linked QR Tags
+              </a>
+            </li>
+          </ul>
         </div>
-      </li>
-      <li>
-        <a
-          href="/account"
-          class={adminSection === "home" ? "active" : ""}
-          onclick={closeDrawer}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            ><path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-            /></svg
-          >
-          Home
-        </a>
-      </li>
-      <li>
-        <a
-          href="/account/billing"
-          class={adminSection === "billing" ? "active" : ""}
-          onclick={closeDrawer}
-        >
-          <svg
-            class="h-5 w-5"
-            viewBox="0 0 24 24"
-            stroke="none"
-            fill="currentColor"
-          >
-            <path
-              d="M18,1H6A3,3,0,0,0,3,4V22a1,1,0,0,0,1.8.6L6.829,19.9l1.276,2.552a1,1,0,0,0,.8.549.981.981,0,0,0,.89-.4L12,19.667,14.2,22.6a.983.983,0,0,0,.89.4,1,1,0,0,0,.8-.549L17.171,19.9,19.2,22.6a1,1,0,0,0,.8.4,1,1,0,0,0,1-1V4A3,3,0,0,0,18,1Zm1,18-1.2-1.6a.983.983,0,0,0-.89-.4,1,1,0,0,0-.8.549l-1.276,2.552L12.8,17.4a1,1,0,0,0-1.6,0L9.171,20.105,7.9,17.553A1,1,0,0,0,7.09,17a.987.987,0,0,0-.89.4L5,19V4A1,1,0,0,1,6,3H18a1,1,0,0,1,1,1ZM17,9a1,1,0,0,1-1,1H8A1,1,0,0,1,8,8h8A1,1,0,0,1,17,9Zm-4,4a1,1,0,0,1-1,1H8a1,1,0,0,1,0-2h4A1,1,0,0,1,13,13Z"
-            />
-          </svg>
-          Billing
-        </a>
-      </li>
-      <li>
-        <a
-          href="/account/settings"
-          class={adminSection === "settings" ? "active" : ""}
-          onclick={closeDrawer}
-        >
-          <svg class="h-5 w-5" viewBox="0 0 24 24" stroke="none" fill="none">
-            <g id="Interface / Settings">
-              <g id="Vector">
-                <path
-                  d="M20.3499 8.92293L19.9837 8.7192C19.9269 8.68756 19.8989 8.67169 19.8714 8.65524C19.5983 8.49165 19.3682 8.26564 19.2002 7.99523C19.1833 7.96802 19.1674 7.93949 19.1348 7.8831C19.1023 7.82677 19.0858 7.79823 19.0706 7.76998C18.92 7.48866 18.8385 7.17515 18.8336 6.85606C18.8331 6.82398 18.8332 6.79121 18.8343 6.72604L18.8415 6.30078C18.8529 5.62025 18.8587 5.27894 18.763 4.97262C18.6781 4.70053 18.536 4.44993 18.3462 4.23725C18.1317 3.99685 17.8347 3.82534 17.2402 3.48276L16.7464 3.1982C16.1536 2.85658 15.8571 2.68571 15.5423 2.62057C15.2639 2.56294 14.9765 2.56561 14.6991 2.62789C14.3859 2.69819 14.0931 2.87351 13.5079 3.22396L13.5045 3.22555L13.1507 3.43741C13.0948 3.47091 13.0665 3.48779 13.0384 3.50338C12.7601 3.6581 12.4495 3.74365 12.1312 3.75387C12.0992 3.7549 12.0665 3.7549 12.0013 3.7549C11.9365 3.7549 11.9024 3.7549 11.8704 3.75387C11.5515 3.74361 11.2402 3.65759 10.9615 3.50224C10.9334 3.48658 10.9056 3.46956 10.8496 3.4359L10.4935 3.22213C9.90422 2.86836 9.60915 2.69121 9.29427 2.62057C9.0157 2.55807 8.72737 2.55634 8.44791 2.61471C8.13236 2.68062 7.83577 2.85276 7.24258 3.19703L7.23994 3.1982L6.75228 3.48124L6.74688 3.48454C6.15904 3.82572 5.86441 3.99672 5.6517 4.23614C5.46294 4.4486 5.32185 4.69881 5.2374 4.97018C5.14194 5.27691 5.14703 5.61896 5.15853 6.3027L5.16568 6.72736C5.16676 6.79166 5.16864 6.82362 5.16817 6.85525C5.16343 7.17499 5.08086 7.48914 4.92974 7.77096C4.9148 7.79883 4.8987 7.8267 4.86654 7.88237C4.83436 7.93809 4.81877 7.96579 4.80209 7.99268C4.63336 8.26452 4.40214 8.49186 4.12733 8.65572C4.10015 8.67193 4.0715 8.68752 4.01521 8.71871L3.65365 8.91908C3.05208 9.25245 2.75137 9.41928 2.53256 9.65669C2.33898 9.86672 2.19275 10.1158 2.10349 10.3872C2.00259 10.6939 2.00267 11.0378 2.00424 11.7255L2.00551 12.2877C2.00706 12.9708 2.00919 13.3122 2.11032 13.6168C2.19979 13.8863 2.34495 14.134 2.53744 14.3427C2.75502 14.5787 3.05274 14.7445 3.64974 15.0766L4.00808 15.276C4.06907 15.3099 4.09976 15.3266 4.12917 15.3444C4.40148 15.5083 4.63089 15.735 4.79818 16.0053C4.81625 16.0345 4.8336 16.0648 4.8683 16.1255C4.90256 16.1853 4.92009 16.2152 4.93594 16.2452C5.08261 16.5229 5.16114 16.8315 5.16649 17.1455C5.16707 17.1794 5.16658 17.2137 5.16541 17.2827L5.15853 17.6902C5.14695 18.3763 5.1419 18.7197 5.23792 19.0273C5.32287 19.2994 5.46484 19.55 5.65463 19.7627C5.86915 20.0031 6.16655 20.1745 6.76107 20.5171L7.25478 20.8015C7.84763 21.1432 8.14395 21.3138 8.45869 21.379C8.73714 21.4366 9.02464 21.4344 9.30209 21.3721C9.61567 21.3017 9.90948 21.1258 10.4964 20.7743L10.8502 20.5625C10.9062 20.5289 10.9346 20.5121 10.9626 20.4965C11.2409 20.3418 11.5512 20.2558 11.8695 20.2456C11.9015 20.2446 11.9342 20.2446 11.9994 20.2446C12.0648 20.2446 12.0974 20.2446 12.1295 20.2456C12.4484 20.2559 12.7607 20.3422 13.0394 20.4975C13.0639 20.5112 13.0885 20.526 13.1316 20.5519L13.5078 20.7777C14.0971 21.1315 14.3916 21.3081 14.7065 21.3788C14.985 21.4413 15.2736 21.4438 15.5531 21.3855C15.8685 21.3196 16.1657 21.1471 16.7586 20.803L17.2536 20.5157C17.8418 20.1743 18.1367 20.0031 18.3495 19.7636C18.5383 19.5512 18.6796 19.3011 18.764 19.0297C18.8588 18.7252 18.8531 18.3858 18.8417 17.7119L18.8343 17.2724C18.8332 17.2081 18.8331 17.1761 18.8336 17.1445C18.8383 16.8247 18.9195 16.5104 19.0706 16.2286C19.0856 16.2007 19.1018 16.1726 19.1338 16.1171C19.166 16.0615 19.1827 16.0337 19.1994 16.0068C19.3681 15.7349 19.5995 15.5074 19.8744 15.3435C19.9012 15.3275 19.9289 15.3122 19.9838 15.2818L19.9857 15.2809L20.3472 15.0805C20.9488 14.7472 21.2501 14.5801 21.4689 14.3427C21.6625 14.1327 21.8085 13.8839 21.8978 13.6126C21.9981 13.3077 21.9973 12.9658 21.9958 12.2861L21.9945 11.7119C21.9929 11.0287 21.9921 10.6874 21.891 10.3828C21.8015 10.1133 21.6555 9.86561 21.463 9.65685C21.2457 9.42111 20.9475 9.25526 20.3517 8.92378L20.3499 8.92293Z"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M8.00033 12C8.00033 14.2091 9.79119 16 12.0003 16C14.2095 16 16.0003 14.2091 16.0003 12C16.0003 9.79082 14.2095 7.99996 12.0003 7.99996C9.79119 7.99996 8.00033 9.79082 8.00033 12Z"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </g>
-            </g>
-          </svg>
-          Settings
-        </a>
-      </li>
 
-      <li class="mt-auto">
-        <a href="/account/sign_out" class="mt-auto text-base">Sign Out</a>
-      </li>
-    </ul>
+        <!-- Upgrade Plan Button -->
+        <!-- pet selection-->
+        <div class="pb-0 border-t mx-4 pt-6 border-base-200">
+          <div class="dropdown dropdown-top w-full bg-base-100 rounded-2xl p-3">
+            <div
+              tabindex="0"
+              role="button"
+              class="flex items-center gap-3 w-full cursor-pointer"
+            >
+              <div class="avatar">
+                <div class="w-12 h-12 rounded-full">
+                  <img
+                    src={selectedPet?.avatar_url || "/images/Section.png"}
+                    alt={selectedPet?.name}
+                  />
+                </div>
+              </div>
+              <div class="flex-1">
+                <p class="font-medium">
+                  {selectedPet?.name}
+                  {selectedPet?.second_name}
+                </p>
+                <p class="text-xs text-gray-500">
+                  Paaws.bio/{selectedPet?.username ||
+                    selectedPet?.name?.toLowerCase()}
+                </p>
+              </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <ul
+              tabindex="0"
+              class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full mb-2"
+            >
+              {#each data.pets as pet}
+                <li class="relative">
+                  <div
+                    class="flex items-center justify-between w-full p-2 hover:bg-base-200 rounded-lg"
+                  >
+                    <button
+                      class="flex items-center gap-3"
+                      on:click={() => {
+                        selectPet(pet)
+                        goto(`/account/pet-profile/${pet.id}/details`)
+                      }}
+                    >
+                      <div class="avatar">
+                        <div class="w-8 h-8 rounded-full">
+                          <img
+                            src={pet.avatar_url || "/images/Section.png"}
+                            alt={pet.name}
+                          />
+                        </div>
+                      </div>
+                      <span>{pet.name}</span>
+                    </button>
+                    <div class="dropdown dropdown-end">
+                      <button
+                        tabindex="0"
+                        class="btn btn-ghost btn-xs btn-circle dropdown-menu"
+                        on:click={(e) => toggleDropdown(pet.id, e)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                          />
+                        </svg>
+                      </button>
+                      {#if openDropdownId === pet.id}
+                        <ul
+                          class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-40"
+                        >
+                          <li>
+                            <a
+                              href="/account/pet-profile/{pet.id}/edit"
+                              class="text-sm"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                />
+                              </svg>
+                              Edit
+                            </a>
+                          </li>
+                          <li>
+                            <button
+                              class="text-error text-sm"
+                              on:click={() => {
+                                /* Add delete handler */
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                              Delete
+                            </button>
+                          </li>
+                        </ul>
+                      {/if}
+                    </div>
+                  </div>
+                </li>
+              {/each}
+              <li>
+                <a
+                  href="/account/add-pet"
+                  class="flex items-center gap-2 text-primary hover:bg-base-200 rounded-lg"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  Add New Pet
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="p-4 pb-0">
+          <button
+            class="btn btn-success bg-primary w-full text-white rounded-full"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Upgrade Plan
+          </button>
+        </div>
+
+        <!-- Pet Settings -->
+        <div class="p-4 pl-6">
+          <a
+            href="/account/settings/pets-plan"
+            class="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Pet Settings
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

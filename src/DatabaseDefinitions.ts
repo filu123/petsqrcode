@@ -187,6 +187,166 @@ export interface Database {
         }
         Relationships: []
       }
+      pet_contacts: {
+        Row: {
+          id: string
+          pet_id: string
+          full_name: string
+          address: string
+          email: string
+          phone_number: string
+          is_primary: boolean
+          is_public: boolean
+          created_at: string
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          pet_id: string
+          full_name: string
+          address: string
+          email: string
+          phone_number: string
+          is_primary?: boolean
+          is_public?: boolean
+          created_at?: string
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          pet_id?: string
+          full_name?: string
+          address?: string
+          email?: string
+          phone_number?: string
+          is_primary?: boolean
+          is_public?: boolean
+          created_at?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pet_contacts_pet_id_fkey"
+            columns: ["pet_id"]
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      pet_maintenance: {
+        Row: {
+          id: string
+          pet_id: string
+          name: string
+          frequency: string
+          start_date: string
+          is_public: boolean
+          created_at: string
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          pet_id: string
+          name: string
+          frequency: string
+          start_date: string
+          is_public?: boolean
+          created_at?: string
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          pet_id?: string
+          name?: string
+          frequency?: string
+          start_date?: string
+          is_public?: boolean
+          created_at?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pet_maintenance_pet_id_fkey"
+            columns: ["pet_id"]
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      pet_veterinarian: {
+        Row: {
+          id: string
+          pet_id: string
+          country: string
+          address: string
+          email: string
+          phone_number: string
+          is_public: boolean
+          created_at: string
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          pet_id: string
+          country: string
+          address: string
+          email: string
+          phone_number: string
+          is_public?: boolean
+          created_at?: string
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          pet_id?: string
+          country?: string
+          address?: string
+          email?: string
+          phone_number?: string
+          is_public?: boolean
+          created_at?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pet_veterinarian_pet_id_fkey"
+            columns: ["pet_id"]
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      account_deletions: {
+        Row: {
+          id: string
+          user_id: string
+          reason: string
+          deleted_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          reason: string
+          deleted_at: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          reason?: string
+          deleted_at?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_deletions_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

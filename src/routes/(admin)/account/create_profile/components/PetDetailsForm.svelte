@@ -134,7 +134,7 @@
   const handleEdit = (index: number) => {
     const pet = pets[index]
     Object.assign(petDetails, pet)
-    previewUrl = pet.avatarUrl
+    previewUrl = pet.avatarUrl ?? null
     pets = pets.filter((_, i) => i !== index)
     currentSubstep = 1
   }

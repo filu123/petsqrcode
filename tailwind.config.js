@@ -50,7 +50,7 @@ export default {
           warning: "#DCFAE6",
           error: "#101828",
           "error-content": "#F77272",
-          'text-menu': "#344054"
+          third: "#344054"
         },
       },
     ],

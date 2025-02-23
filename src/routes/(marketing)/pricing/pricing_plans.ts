@@ -3,50 +3,55 @@ export const defaultPlanId = "free"
 export const pricingPlans = [
   {
     id: "free",
-    name: "Free",
-    description: "Basic feautures",
-    price: "$0",
+    name: "Basic",
+    color: "#0EA5E9", // Blue
+    description: "Some basics to get started",
+    monthlyPrice: "Free",
+    yearlyPrice: "Free",
     priceIntervalName: "per month",
     stripe_price_id: null,
-    features: ["Custom Pet Profile", "Sell Digital Products", "Sell Coaching Calls", "Create Lead Magnets", "YouTube-Sync Block", "TikTok-Sync Block", "Contact Form Block", "Send Email Broadcasts", "Publish Blog Posts" , "3rd Party Integrations"],
+    popular: false,
+    features: [
+      "Custom pet profile",
+      "Track pet details",
+      "Pet maintenance",
+      "Vet details",
+      "Owner contact details"
+    ],
   },
   {
     id: "pro",
     name: "Pro",
-    description:
-      "Keeping your pet safe",
-    price: "$3",
+    color: "#22C55E", // Green
+    description: "Everything in free plan plus",
+    monthlyPrice: "$3",
+    yearlyPrice: "$2.70",
     priceIntervalName: "per month",
     stripe_price_id: "price_1QtTFlLBnoPY6LhHDhi5RHec",
     stripe_product_id: "prod_Rn3MnwGlTocSXo",
+    popular: true,
     features: [
-      "Custom Domains",
-      "Sell Digital Products",
-      "Sell Coaching Calls",
-      "Create Lead Magnets",
-      "YouTube-Sync Block",
-      "TikTok-Sync Block",
-      "Contact Form Block",
-      "Send Email Broadcasts",
-      "Publish Blog Posts",
-      "3rd Party Integrations",
+      "Register pet QR code",
+      "Receive pets location",
+      "Scan for profile",
+      "Invite 1 user"
     ],
   },
   {
-    id: "enterprise",
-    name: "Enterprise",
-    description:
-      "All of our features",
-    price: "$6",
+    id: "ultra",
+    name: "Ultra",
+    color: "#EF4444", // Red
+    description: "Everything in pro plan plus",
+    monthlyPrice: "$6",
+    yearlyPrice: "$5.40",
     priceIntervalName: "per month",
     stripe_price_id: "price_1QtTGALBnoPY6LhHn47rrmrq",
     stripe_product_id: "prod_Rn3MYiuz8JjnAD",
+    popular: false,
     features: [
-      "Invite Team Members",
-      "Remove Zaap Branding",
-      "Create Discount Codes",
-      "1-on-1 Coaching",
-      "+ Everything in Pro",
+      "Use own QR code",
+      "Invite unlimited users",
+      "Pawws will"
     ],
   },
 ]
