@@ -61,7 +61,7 @@
           type="file"
           accept="image/*"
           class="hidden"
-          on:change={handleFileSelect}
+          onchange={handleFileSelect}
         />
       </label>
       {#if uploadError}

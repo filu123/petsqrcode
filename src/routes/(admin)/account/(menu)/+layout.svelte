@@ -116,7 +116,7 @@
     </div>
 
     <div class="drawer-side mt-2">
-      <label for="admin-drawer" class="drawer-overlay" />
+      <label for="admin-drawer" class="drawer-overlay"></label>
       <div class="w-72 min-h-full lg:border-r border-base-200 flex flex-col">
         <!-- Pet Selection Section -->
 

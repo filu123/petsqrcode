@@ -108,7 +108,7 @@
               type="checkbox"
               class="toggle toggle-success"
               checked={areAllHidden}
-              on:change={(e) => {
+              onchange={(e) => {
                 const form = e.currentTarget.closest("form") as HTMLFormElement
                 const formData = new FormData(form)
                 formData.set("hideDetails", (!areAllHidden).toString())

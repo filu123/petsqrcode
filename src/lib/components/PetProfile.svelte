@@ -36,7 +36,7 @@
   )
 </script>
 
-<div class="bg-[#7DD959] h-40" />
+<div class="bg-[#7DD959] h-40"></div>
 
 <div class="px-4 -mt-16">
   <!-- Profile Section -->

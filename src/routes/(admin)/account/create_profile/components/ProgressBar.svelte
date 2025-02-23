@@ -21,7 +21,7 @@
                 ? '0%'
                 : '0%'
             : '0%'}"
-      />
+     ></div>
     </div>
 
     <div class="flex flex-col items-center gap-2 z-10">

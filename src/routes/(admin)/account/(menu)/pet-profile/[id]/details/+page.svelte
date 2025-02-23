@@ -105,7 +105,7 @@
                 type="file"
                 accept="image/*"
                 class="hidden"
-                on:change={handleFileSelect}
+                onchange={handleFileSelect}
               />
             </label>
             <div class="pt-0 ml-auto">
@@ -180,7 +180,7 @@
           name="bio"
           class="textarea bg-white textarea-bordered w-full h-32"
           value={pet?.bio}
-        />
+       ></textarea>
       </div>
 
       <!-- Basic Info -->
