@@ -2,7 +2,9 @@ import { fail, redirect } from "@sveltejs/kit"
 import { sendAdminEmail, sendUserEmail } from "$lib/mailer"
 import { WebsiteBaseUrl } from "../../../../config"
 import { createClient } from '@supabase/supabase-js'
+import { petActions } from './petActions.server';
 
+ // Get pets for the current user
 export const actions = {
   toggleEmailSubscription: async ({ locals: { supabase, safeGetSession } }) => {
     const { session } = await safeGetSession()
@@ -435,5 +437,7 @@ export const actions = {
     return {
       success: true
     }
-  }
+  },
+  addPet: petActions.addPet,
+  deletePet: petActions.deletePet
 }

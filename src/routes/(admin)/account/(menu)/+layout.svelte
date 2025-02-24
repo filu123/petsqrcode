@@ -6,6 +6,12 @@
   import DashboardHeader from "$lib/components/DashboardHeader.svelte"
   import { selectedPetStore } from "$lib/stores/selectedPet"
   import { goto } from "$app/navigation"
+  import AddPetModal from "$lib/components/AddPetModal.svelte"
+  import DeletePetModal from "$lib/components/DeletePetModal.svelte"
+
+  let addPetModal = $state(false)
+  let deletePetModal = $state(false)
+  let selectedPetForDelete = $state<{ id: string; name: string } | null>(null)
 
   interface Props {
     data: {
@@ -74,6 +80,11 @@
       "admin-drawer",
     ) as HTMLInputElement
     adminDrawer.checked = false
+  }
+
+  function openDeleteModal(pet: any) {
+    selectedPetForDelete = { id: pet.id, name: pet.name }
+    deletePetModal = true
   }
 </script>
 
@@ -245,6 +256,7 @@
                 />
               </svg>
             </div>
+            <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
             <ul
               tabindex="0"
               class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full mb-2"
@@ -298,7 +310,7 @@
                         >
                           <li>
                             <a
-                              href="/account/pet-profile/{pet.id}/edit"
+                              href="/account/pet-profile/{pet.id}/details"
                               class="text-sm"
                             >
                               <svg
@@ -321,9 +333,7 @@
                           <li>
                             <button
                               class="text-error text-sm"
-                              onclick={() => {
-                                /* Add delete handler */
-                              }}
+                              onclick={() => openDeleteModal(pet)}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -349,9 +359,9 @@
                 </li>
               {/each}
               <li>
-                <a
-                  href="/account/add-pet"
-                  class="flex items-center gap-2 text-primary hover:bg-base-200 rounded-lg"
+                <button
+                  class="flex items-center gap-2 text-primary hover:bg-base-200 rounded-lg w-full"
+                  onclick={() => (addPetModal = true)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -366,7 +376,7 @@
                     />
                   </svg>
                   Add New Pet
-                </a>
+                </button>
               </li>
             </ul>
           </div>
@@ -417,3 +427,9 @@
     </div>
   </div>
 </div>
+<AddPetModal bind:isOpen={addPetModal} />
+<DeletePetModal
+  bind:isOpen={deletePetModal}
+  petId={selectedPetForDelete?.id}
+  petName={selectedPetForDelete?.name}
+/>

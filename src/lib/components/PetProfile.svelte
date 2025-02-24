@@ -12,8 +12,11 @@
   // Filter public contacts and limit to 2
   let publicContacts = $derived(
     pet.pet_contacts
-      ?.filter((contact) => contact.is_public)
-      .sort((a, b) => Number(b.is_primary) - Number(a.is_primary))
+      ?.filter((contact: { is_public: any }) => contact.is_public)
+      .sort(
+        (a: { is_primary: any }, b: { is_primary: any }) =>
+          Number(b.is_primary) - Number(a.is_primary),
+      )
       .slice(0, 2) || [],
   )
 
@@ -23,16 +26,18 @@
       ? pet.pet_veterinarian[0]
       : null,
   )
-  console.log(pet)
+
   // Get upcoming maintenance events
   let upcomingEvents = $derived(
     pet.pet_maintenance
-      ?.filter((maintenance) => maintenance.is_public)
-      .map((maintenance) => ({
-        title: maintenance.name,
-        status: `Due ${format(new Date(maintenance.start_date), "do MMMM")}`,
-        type: "maintenance",
-      })) || [],
+      ?.filter((maintenance: { is_public: any }) => maintenance.is_public)
+      .map(
+        (maintenance: { name: any; start_date: string | number | Date }) => ({
+          title: maintenance.name,
+          status: `Due ${format(new Date(maintenance.start_date), "do MMMM")}`,
+          type: "maintenance",
+        }),
+      ) || [],
   )
 </script>
 
@@ -189,7 +194,7 @@
 
   <!-- Contacts Section -->
   {#if publicContacts.length > 0}
-    <div class="pb-10">
+    <div class="pb-10 pt-10">
       <h2 class="text-sm text-gray-500">More contacts for {pet.name}</h2>
       <div class="mt-2 space-y-4">
         {#each publicContacts as contact}

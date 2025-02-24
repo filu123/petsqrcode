@@ -175,7 +175,7 @@
               <input
                 type="checkbox"
                 name="is_public"
-                class="checkbox"
+                class="toggle toggle-success"
                 checked={editingContact.is_public}
               />
               <span class="text-sm text-gray-600">Make this contact public</span
@@ -328,7 +328,12 @@
         </div>
 
         <div class="flex items-center gap-2 mt-2">
-          <input type="checkbox" name="is_public" class="checkbox" checked />
+          <input
+            type="checkbox"
+            name="is_public"
+            class="toggle toggle-success"
+            checked
+          />
           <span class="text-sm text-gray-600">Make this contact public</span>
         </div>
 
