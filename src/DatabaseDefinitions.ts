@@ -347,6 +347,55 @@ export interface Database {
           }
         ]
       }
+      pet_subscriptions: {
+        Row: {
+          id: string
+          pet_id: string
+          plan_type: string
+          stripe_subscription_id: string | null
+          stripe_customer_id: string | null
+          status: string
+          current_period_start: string
+          current_period_end: string
+          cancel_at_period_end: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          pet_id: string
+          plan_type?: string
+          stripe_subscription_id?: string | null
+          stripe_customer_id?: string | null
+          status?: string
+          current_period_start?: string
+          current_period_end?: string
+          cancel_at_period_end?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          pet_id?: string
+          plan_type?: string
+          stripe_subscription_id?: string | null
+          stripe_customer_id?: string | null
+          status?: string
+          current_period_start?: string
+          current_period_end?: string
+          cancel_at_period_end?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pet_subscriptions_pet_id_fkey"
+            columns: ["pet_id"]
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
