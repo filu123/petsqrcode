@@ -18,7 +18,6 @@ import { selectedPetStore } from "$lib/stores/selectedPetStore"
 export const load = async ({ fetch, data = {}, depends, url }) => {
   depends("supabase:auth")
 
-  // Safely access cookies with default empty array
   const cookies = data?.cookies || []
 
   const supabase = isBrowser()
@@ -37,68 +36,40 @@ export const load = async ({ fetch, data = {}, depends, url }) => {
           },
         },
       })
-
-  // Pass null as default session if data.session is undefined
   const { session, user } = await load_helper(data?.session || null, supabase)
   
-  // Non-authenticated routes - allow access to public routes
-  if (!session || !user) {
-    // Only redirect to login for protected routes
-    if (url.pathname.startsWith('/dashboard') || 
-        url.pathname.startsWith('/api/')) {
-      redirect(303, "/login")
-    }
+  // Remove the redirect logic from here since it's now handled in hooks.server.ts
+  
+  // Get the user profile if authenticated
+  let profile = null
+  let pets = []
+  
+  if (session && user) {
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select(`*`)
+      .eq("id", user.id)
+      .single()
     
-    return {
-      supabase,
-      session: null,
-      profile: null,
-      user: null,
-      pets: [],
-      amr: null,
-    }
-  }
+    profile = profileData
 
-  // Get the user profile
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select(`*`)
-    .eq("id", user.id)
-    .single()
-
-  // Get the user's pets
-  const { data: pets } = await supabase
-    .from("pets")
-    .select(`*`)
-    .eq("profile_id", user.id)
-
-  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
-
-  // Check for incomplete profile
-  const createProfilePath = "/dashboard/create_profile"
-  const signOutPath = "/dashboard/sign_out"
-  if (
-    !profile ||
-    !_hasFullProfile(profile) &&
-    url.pathname !== createProfilePath &&
-    url.pathname !== signOutPath &&
-    CreateProfileStep
-  ) {
-    redirect(303, createProfilePath)
+    const { data: petsData } = await supabase
+      .from("pets")
+      .select(`*`)
+      .eq("profile_id", user.id)
+    
+    pets = petsData || []
   }
 
   // Initialize stores in browser
-  if (isBrowser()) {
-    // Initialize user store with loaded data
-    userStore.initialize();
+  if (isBrowser() && session && user) {
+    userStore.initialize()
     
-    // Load pets if profile is complete
     if (profile && _hasFullProfile(profile)) {
-      petStore.loadUserPets();
+      petStore.loadUserPets()
       
-      // Select first pet if none selected
       if (pets && pets.length > 0) {
-        selectedPetStore.selectFirstPetIfNoneSelected();
+        selectedPetStore.selectFirstPetIfNoneSelected()
       }
     }
   }
@@ -108,8 +79,8 @@ export const load = async ({ fetch, data = {}, depends, url }) => {
     session,
     profile,
     user,
-    pets: pets || [],
-    amr: aal?.currentAuthenticationMethods,
+    pets,
+    amr: null, // You can add this back if needed
   }
 }
 
@@ -137,3 +108,5 @@ export const _hasFullProfile = (
 
   return requiredFields.every(field => profile[field as keyof typeof profile])
 }
+
+

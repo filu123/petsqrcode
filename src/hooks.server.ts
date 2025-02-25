@@ -6,7 +6,7 @@ import {
 } from "$env/static/public"
 import { createServerClient } from "@supabase/ssr"
 import { createClient } from "@supabase/supabase-js"
-import type { Handle } from "@sveltejs/kit"
+import { redirect, type Handle } from "@sveltejs/kit"
 import { sequence } from "@sveltejs/kit/hooks"
 
 export const supabase: Handle = async ({ event, resolve }) => {
@@ -55,6 +55,7 @@ export const supabase: Handle = async ({ event, resolve }) => {
     const {
       data: { session },
     } = await event.locals.supabase.auth.getSession()
+    
     if (!session) {
       return { session: null, user: null, amr: null }
     }
@@ -90,6 +91,13 @@ const authGuard: Handle = async ({ event, resolve }) => {
   const { session, user } = await event.locals.safeGetSession()
   event.locals.session = session
   event.locals.user = user
+
+  // Add protection for dashboard routes
+  if (event.url.pathname.startsWith('/dashboard')) {
+    if (!session || !user) {
+      throw redirect(303, '/login');
+    }
+  }
 
   return resolve(event)
 }

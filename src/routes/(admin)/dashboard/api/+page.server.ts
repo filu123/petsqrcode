@@ -2,7 +2,6 @@ import { fail, redirect } from "@sveltejs/kit"
 import { sendAdminEmail, sendUserEmail } from "$lib/mailer"
 import { WebsiteBaseUrl } from "../../../../config"
 import { petService } from "$lib/services/petService"
-import { userService } from "$lib/services/userService" // We need to create this
 import type { Database } from "../../../../DatabaseDefinitions"
 
 // Get pets for the current user

@@ -2,6 +2,9 @@
   import { selectedPetStore } from "$lib/stores/selectedPetStore"
   import { onMount } from "svelte"
 
+  // Get the store from the selectedPetStore object
+  const selectedPetStore_selectedPet = selectedPetStore.selectedPet
+
   // Sample data for demonstration
   const tasks = [
     {
@@ -46,28 +49,28 @@
 
 <div class="max-w-5xl mx-auto">
   <!-- Pet Header Section -->
-  {#if $selectedPetStore.selectedPet}
+  {#if $selectedPetStore_selectedPet}
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-4">
         <div class="avatar">
           <div class="w-16 h-16 rounded-full">
             <img
-              src={$selectedPetStore.selectedPet.avatar_url ||
+              src={$selectedPetStore_selectedPet.avatar_url ||
                 "/images/Section.png"}
-              alt={$selectedPetStore.selectedPet.name}
+              alt={$selectedPetStore_selectedPet.name}
             />
           </div>
         </div>
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-2xl font-semibold">
-              {$selectedPetStore.selectedPet.name}
-              {$selectedPetStore.selectedPet.second_name || ""}
+              {$selectedPetStore_selectedPet.name}
+              {$selectedPetStore_selectedPet.second_name || ""}
             </h1>
             <span class="badge badge-primary text-xs py-1 px-2">Pro Plan</span>
           </div>
           <p class="text-sm text-gray-500">
-            Pawws.bio/{$selectedPetStore.selectedPet.name.toLowerCase()}
+            Pawws.bio/{$selectedPetStore_selectedPet.name.toLowerCase()}
           </p>
         </div>
       </div>
@@ -79,7 +82,7 @@
 
   <!-- Upcoming Tasks Section -->
   <h2 class="text-xl font-semibold mt-8 mb-4">
-    Upcoming for {$selectedPetStore.selectedPet?.name || "Your Pet"}
+    Upcoming for {$selectedPetStore_selectedPet?.name || "Your Pet"}
   </h2>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -94,7 +97,7 @@
 
   <!-- Maintenance Section -->
   <h2 class="text-xl font-semibold mt-8 mb-4">
-    Upcoming for {$selectedPetStore.selectedPet?.name || "Your Pet"}
+    Upcoming for {$selectedPetStore_selectedPet?.name || "Your Pet"}
   </h2>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

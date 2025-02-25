@@ -7,8 +7,14 @@
   let { user } = $props()
 
   const currentPath = $derived($page.url.pathname)
-  const selectedPetId = $derived($selectedPetStore.selectedPetId)
-  const pets = $derived($petStore.pets.subscribe)
+
+  // Access the actual stores from the store objects
+  const petStore_pets = petStore.pets
+  const selectedPetStore_selectedPetId = selectedPetStore.selectedPetId
+
+  // Subscribe to the values using $ prefix
+  const pets = $derived($petStore_pets)
+  const selectedPetId = $derived($selectedPetStore_selectedPetId)
 
   const navItems = [
     { path: "/dashboard", label: "Dashboard", icon: "dashboard" },

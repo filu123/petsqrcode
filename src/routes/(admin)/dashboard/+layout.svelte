@@ -8,13 +8,17 @@
 
   let { data, children } = $props()
 
+  // Access the actual stores from the objects
+  const petStore_hasPets = petStore.hasPets
+  const petStore_pets = petStore.pets
+
   onMount(async () => {
     // Make sure pets are loaded
-    if (!$petStore.hasPets) {
+    if (!$petStore_hasPets) {
       await petStore.loadUserPets()
 
       // Select first pet if none selected
-      if ($petStore.pets.length > 0) {
+      if ($petStore_pets.length > 0) {
         selectedPetStore.selectFirstPetIfNoneSelected()
       }
     }
