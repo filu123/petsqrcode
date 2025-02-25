@@ -17,8 +17,8 @@
     <ul class="menu menu-horizontal px-1 hidden sm:flex font-bold text-lg">
       <li class="md:mx-2"><a href="/blog">Home</a></li>
       <li class="md:mx-2"><a href="/pricing">Products</a></li>
-      <li class="md:mx-2"><a href="/account">Resources</a></li>
-      <li class="md:mx-2"><a href="/account">Pricing</a></li>
+      <li class="md:mx-2"><a href="/dashboard">Resources</a></li>
+      <li class="md:mx-2"><a href="/dashboard">Pricing</a></li>
     </ul>
     <div class="dropdown dropdown-end sm:hidden">
       <!-- svelte-ignore a11y_label_has_associated_control -->
@@ -45,7 +45,7 @@
       >
         <li><a href="/blog">Blog</a></li>
         <li><a href="/pricing">Pricing</a></li>
-        <li><a href="/account">Account</a></li>
+        <li><a href="/dashboard">Account</a></li>
         <li><a href="/search">Search</a></li>
         <li>
           <a

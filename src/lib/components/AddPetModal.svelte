@@ -74,7 +74,7 @@
 
       <form
         method="POST"
-        action="/account/api?/addPet"
+        action="/dashboard/api?/addPet"
         use:enhance={handleSubmit}
         enctype="multipart/form-data"
       >

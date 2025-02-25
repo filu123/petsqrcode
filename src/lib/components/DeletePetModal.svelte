@@ -35,7 +35,7 @@
 
       <form
         method="POST"
-        action="/account/api?/deletePet"
+        action="/dashboard/api?/deletePet"
         use:enhance={handleSubmit}
       >
         <input type="hidden" name="petId" value={petId} />

@@ -89,7 +89,7 @@
       .single()
 
     if (profileData?.has_completed_onboarding) {
-      window.location.href = "/account"
+      window.location.href = "/dashboard"
     }
   })
 
@@ -152,7 +152,7 @@
       return
     }
 
-    window.location.href = "/account"
+    window.location.href = "/dashboard"
   }
 </script>
 
@@ -250,6 +250,6 @@
 
   <div class="text-sm text-slate-800 mt-8 mb-4 text-center">
     You are logged in as {user?.email}.<br />
-    <a class="underline" href="/account/sign_out">Sign out</a>
+    <a class="underline" href="/dashboard/sign_out">Sign out</a>
   </div>
 </div>

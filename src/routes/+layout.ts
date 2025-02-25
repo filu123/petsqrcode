@@ -8,8 +8,8 @@ import {
   isBrowser,
 } from "@supabase/ssr"
 import { redirect } from "@sveltejs/kit"
-import type { Database } from "../../../DatabaseDefinitions.js"
-import { CreateProfileStep } from "../../../config"
+import type { Database } from "../DatabaseDefinitions"
+import { CreateProfileStep } from "../config"
 import { load_helper } from "$lib/load_helpers"
 
 export const load = async ({ fetch, data, depends, url }) => {

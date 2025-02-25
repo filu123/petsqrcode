@@ -452,7 +452,7 @@
 
     <form
       method="POST"
-      action="/account/api?/updateProfile"
+      action="/dashboard/api?/updateProfile"
       use:enhance={enhanceSubmit}
     >
       <!-- Add user details hidden inputs -->

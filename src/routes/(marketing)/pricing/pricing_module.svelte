@@ -60,28 +60,28 @@
           </div>
         {:else if currentPlanId === "pro" && plan.id === "ultra"}
           <a
-            href={"/account/billing/manage"}
+            href={"/dashboard/billing/manage"}
             class="btn btn-primary text-white w-full mb-6"
           >
             Upgrade
           </a>
         {:else if currentPlanId === "pro" && plan.id === "free"}
           <a
-            href={"/account/billing/manage"}
+            href={"/dashboard/billing/manage"}
             class="btn btn-outline w-full mb-6"
           >
             Downgrade
           </a>
         {:else if currentPlanId === "ultra"}
           <a
-            href={"/account/billing/manage"}
+            href={"/dashboard/billing/manage"}
             class="btn btn-outline w-full mb-6"
           >
             Downgrade
           </a>
         {:else if currentPlanId === "free" && (plan.id === "pro" || plan.id === "ultra")}
           <a
-            href={"/account/subscribe/" + plan.stripe_price_id}
+            href={"/dashboard/subscribe/" + plan.stripe_price_id}
             class="btn btn-primary text-white w-full mb-6"
           >
             {plan.id === "ultra" ? "Upgrade to Ultra" : "Upgrade to Pro"}
