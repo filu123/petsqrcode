@@ -10,8 +10,13 @@ export const load_helper = async (
   let session = server_session
   if (isBrowser()) {
     // Only call getSession in browser where it's safe.
-    const getSessionResponse = await supabase.auth.getSession()
-    session = getSessionResponse.data.session
+    try {
+      const getSessionResponse = await supabase.auth.getSession()
+      session = getSessionResponse.data.session
+    } catch (error) {
+      console.error("Error getting session:", error)
+      session = null
+    }
   }
   if (!session) {
     return {
